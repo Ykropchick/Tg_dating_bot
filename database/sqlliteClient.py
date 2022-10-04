@@ -16,6 +16,21 @@ async def sql_add_command(state):
         base.commit()
 
 
+def take_all_ankets():
+    cur.execute("SELECT * FROM user")
+    info = cur.fetchall()
+    return info
+
+
+def reload_ankets(id):
+    cur.execute(f'UPDATE user SET cur_anket = ? WHERE id=?', (0, id))
+    base.commit()
+
+def increase_cur_anket(id, cur_anket):
+    cur.execute(f'UPDATE user SET cur_anket = ? WHERE id=?', (cur_anket, id))
+    base.commit()
+
+
 def take_user_info(id):
     cur.execute(f"SELECT * FROM user WHERE id ={id}")
     info = cur.fetchall()

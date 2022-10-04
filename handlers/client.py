@@ -11,6 +11,7 @@ import KeyBoards.KeyBoards as KB
 
 
 async def main_menu(message: types.Message, state: FSMContext):
+    global cur_pos
     info = sqlliteClient.check_if_exist(message.from_user.id)
     if info:
         await message.answer("Выберите действие на клавиатуре", reply_markup=KB.main_menu_KeyBoard)
@@ -26,6 +27,43 @@ async def change_anket_menu(message: types.Message):
 
 async def back_to_main_menu(message: types.Message):
     await message.answer("Выбирите действие на клавиатуре", reply_markup=KB.main_menu_KeyBoard)
+
+
+ankets = []
+num_anket = 0
+
+async def show_ankets(message: types.Message):
+    global ankets
+    global num_anket
+    ankets = sqlliteClient.take_all_ankets()
+
+    for anket in ankets:
+        if anket[0] == message.from_user.id:
+            num_anket = anket[6]
+            break
+
+    await message.answer_photo(photo=ankets[num_anket][5], caption= \
+        f"{ankets[num_anket][1]}, {ankets[num_anket][2]}\n {ankets[num_anket][4]}", reply_markup=KB.next_anket)
+
+
+async def next_anket(callback: types.CallbackQuery):
+    global ankets
+    global num_anket
+    try:
+        num_anket += 1
+        sqlliteClient.increase_cur_anket(callback.from_user.id, num_anket)
+
+        await callback.message.answer_photo(photo=ankets[num_anket][5], caption= \
+            f"{ankets[num_anket][1]}, {ankets[num_anket][2]}\n {ankets[num_anket][4]}", reply_markup=KB.next_anket)
+    except IndexError as e:
+        await callback.message.answer("Все анкеты были просмотрены", reply_markup=KB.end_anekets_KeyBoard)
+
+
+async def reload_ankets(message: types.Message):
+    if num_anket == len(ankets):
+        sqlliteClient.reload_ankets(message.from_user.id)
+    else:
+        pass
 
 
 class FSMCChangeAnket(StatesGroup):
@@ -133,6 +171,12 @@ def register_handlers_client(dp: Dispatcher):
     dp.register_message_handler(main_menu, commands='start')
 
     dp.register_message_handler(back_to_main_menu, Text(equals="Отмена", ignore_case=True))
+
+    dp.register_message_handler(reload_ankets, Text(equals="Смотреть старые анкеты"))
+
+    dp.register_callback_query_handler(next_anket, Text(equals="next"))
+
+    dp.register_message_handler(show_ankets, Text(equals="Посмотреть все анкеты", ignore_case=True))
 
     dp.register_message_handler(change_anket_menu, Text(equals="Моя анкета", ignore_case=True))
 
