@@ -31,14 +31,18 @@ async def back_to_main_menu(message: types.Message):
 
 ankets = []
 num_anket = 0
+my_anket = []
+
 
 async def show_ankets(message: types.Message):
     global ankets
     global num_anket
+    global my_anket
     ankets = sqlliteClient.take_all_ankets()
 
     for anket in ankets:
         if anket[0] == message.from_user.id:
+            my_anket = anket
             num_anket = anket[6]
             break
 
@@ -55,6 +59,23 @@ async def next_anket(callback: types.CallbackQuery):
 
         await callback.message.answer_photo(photo=ankets[num_anket][5], caption= \
             f"{ankets[num_anket][1]}, {ankets[num_anket][2]}\n {ankets[num_anket][4]}", reply_markup=KB.next_anket)
+    except IndexError as e:
+        await callback.message.answer("Все анкеты были просмотрены", reply_markup=KB.end_anekets_KeyBoard)
+
+
+async def like_anket(callback: types.CallbackQuery):
+    global ankets
+    global num_anket
+    global my_anket
+    try:
+        num_anket += 1
+        sqlliteClient.increase_cur_anket(callback.from_user.id, num_anket)
+
+        await callback.message.answer_photo(photo=ankets[num_anket][5], caption= \
+            f"{ankets[num_anket][1]}, {ankets[num_anket][2]}\n {ankets[num_anket][4]}", reply_markup=KB.next_anket)
+
+        await Bot.send_photo(chat_id=my_anket[0], photo=my_anket[5], caption= \
+            f"{my_anket[1]}, {my_anket[2]}\n {my_anket[4]}")
     except IndexError as e:
         await callback.message.answer("Все анкеты были просмотрены", reply_markup=KB.end_anekets_KeyBoard)
 
@@ -175,6 +196,7 @@ def register_handlers_client(dp: Dispatcher):
     dp.register_message_handler(reload_ankets, Text(equals="Смотреть старые анкеты"))
 
     dp.register_callback_query_handler(next_anket, Text(equals="next"))
+    dp.register_callback_query_handler(like_anket, Text(equals="like"))
 
     dp.register_message_handler(show_ankets, Text(equals="Посмотреть все анкеты", ignore_case=True))
 
