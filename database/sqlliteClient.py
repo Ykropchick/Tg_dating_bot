@@ -7,6 +7,17 @@ def sql_start():
     cur = base.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS user(id INT PRIMARY KEY, name Text, age INT, \
     sex TEXT, description TEXT, img TEXT, cur_anket INT DEFAULT(0))")
+    cur.execute("CREATE TABLE IF NOT EXISTS sympathy(sender_id INT PRIMARY KEY, host_id INT )")
+    base.commit()
+
+
+def add_sympathy(sender_id, host_id):
+    cur.execute("INSERT OR REPLACE INTO sympathy VALUES(sender_id, host_id)", (sender_id, host_id))
+    base.commit()
+
+
+def delete_sympathy(sender_id, host_id):
+    cur.execute("DELETE FROM sympathy WHERE sender_id=?, host_id=?", (sender_id, host_id))
     base.commit()
 
 
@@ -16,8 +27,8 @@ async def sql_add_command(state):
         base.commit()
 
 
-def take_all_ankets():
-    cur.execute("SELECT * FROM user")
+def take_all_ankets(id):
+    cur.execute("SELECT * FROM user EXCEPT SELECT * FROM user WHERE id=?", (id, ))
     info = cur.fetchall()
     return info
 
@@ -25,6 +36,7 @@ def take_all_ankets():
 def reload_ankets(id):
     cur.execute(f'UPDATE user SET cur_anket = ? WHERE id=?', (0, id))
     base.commit()
+
 
 def increase_cur_anket(id, cur_anket):
     cur.execute(f'UPDATE user SET cur_anket = ? WHERE id=?', (cur_anket, id))
