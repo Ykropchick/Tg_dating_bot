@@ -14,6 +14,10 @@ async def message_change_photo(message: types.Message, state=None):
     await message.answer("Пришлите новое фото")
 
 
+async def back_to_main_menu(message: types.Message):
+    await message.answer("Выбирите действие на клавиатуре", reply_markup=KB.main_menu_KeyBoard)
+
+
 async def take_modified_photo(message: types.Message, state: FSMContext):
     photo = message.photo[-1].file_id
     user_id = message.from_user.id

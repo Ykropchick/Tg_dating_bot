@@ -23,11 +23,12 @@ async def show_ankets(message: types.Message):
             num_anket = anket[6]
             break
 
+    # ankets.remove(my_anket)
     await message.answer(text="Анкеты:", reply_markup=ReplyKeyboardRemove())
     try:
         sqlliteClient.increase_cur_anket(message.from_user.id, num_anket)
 
-        await message.answer_photo(photo=ankets[num_anket][5], caption= \
+        await message.answer_photo(photo=ankets[num_anket][5], caption=\
             f"{ankets[num_anket][1]}, {ankets[num_anket][2]}\n {ankets[num_anket][4]}", reply_markup=KB.next_anket)
         num_anket += 1
     except IndexError as e:
@@ -59,15 +60,11 @@ async def like_anket(callback: types.CallbackQuery):
         await callback.message.answer_photo(photo=ankets[num_anket][5], caption= \
             f"{ankets[num_anket][1]}, {ankets[num_anket][2]}\n {ankets[num_anket][4]}", reply_markup=KB.next_anket)
 
-        await bot.send_message(chat_id=ankets[num_anket - 1][0], Text="У вас новая симпатия")
+        await bot.send_message(chat_id=ankets[num_anket - 1][0], text="У вас новая симпатия")
 
         num_anket += 1
     except IndexError as e:
         await callback.message.answer("Все анкеты были просмотрены", reply_markup=KB.end_anekets_KeyBoard)
-
-
-async def show_my_sympathies(message: types.Message):
-    pass
 
 
 async def reload_ankets(message: types.Message):

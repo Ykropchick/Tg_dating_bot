@@ -36,3 +36,7 @@ submitted_anket_KeyBoard.add(InlineKeyboardMarkup(text="Нравиться", cal
 next_anket = InlineKeyboardMarkup(row_width=2, resize_keyboard=True)
 next_anket.add(InlineKeyboardMarkup(text="Следущая", callback_data="next"), InlineKeyboardMarkup(text="Нравиться", callback_data="like"))
 next_anket.add(InlineKeyboardMarkup(text="Назад", callback_data="back"))
+
+sympathy_KeyBoard = InlineKeyboardMarkup(row_width=2, resize_keyboard=True)
+sympathy_KeyBoard.add(InlineKeyboardMarkup(text="Нравиться", callback_data="like_symp"), InlineKeyboardMarkup(text="Не Нравиться", callback_data="not_like_symp"))
+
