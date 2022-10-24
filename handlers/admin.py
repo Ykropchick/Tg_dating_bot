@@ -16,6 +16,11 @@ class FSMCLogIn(StatesGroup):
 
 
 async def question_log_in_admin(message: types.Message, state: FSMContext):
+    """
+    Проверяет являеться ли ты админом
+    Если да, то выдает панель админа
+    Иначе выдает вопросы для входа в админку
+    """
     flag = sqlliteAdmin.check_if_admin(message.from_user.id)
     if flag:
         await message.answer("Вы вошли в панель админа", reply_markup=KB.admin_KeyBoard)
@@ -25,11 +30,17 @@ async def question_log_in_admin(message: types.Message, state: FSMContext):
 
 
 async def change_data_login(message: types.Message):
+    """
+    Инициализирует машину состояния
+    """
     await FSMCLogIn.login.set()
     await message.answer("Введите логин")
 
 
 async def login(message: types.Message, state: FSMContext):
+    """
+    Считывает логин
+    """
     async with state.proxy() as data:
         data['id'] = message.from_user.id
         data['login'] = message.text
@@ -39,6 +50,9 @@ async def login(message: types.Message, state: FSMContext):
 
 
 async def password(message: types.Message, state: FSMContext):
+    """
+    Считывает пароль
+    """
     async with state.proxy() as data:
         data['password'] = message.text
     await sqlliteAdmin.add_admin(state)
