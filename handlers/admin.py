@@ -17,7 +17,6 @@ class FSMCLogIn(StatesGroup):
 
 async def question_log_in_admin(message: types.Message, state: FSMContext):
     flag = sqlliteAdmin.check_if_admin(message.from_user.id)
-    print(flag == None)
     if flag:
         await message.answer("Вы вошли в панель админа", reply_markup=KB.admin_KeyBoard)
     else:

@@ -17,7 +17,6 @@ def register_handlers_client(dp: Dispatcher):
     dp.register_callback_query_handler(like_symp, Text(equals="like_symp"))
     dp.register_callback_query_handler(not_like_symp, Text(equals="not_like_symp"))
 
-
     dp.register_callback_query_handler(next_anket, Text(equals="next"))
     dp.register_callback_query_handler(like_anket, Text(equals="like"))
     dp.register_callback_query_handler(back_to_mainmenu_callback, Text(equals="back"))

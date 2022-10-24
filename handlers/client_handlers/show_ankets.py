@@ -12,6 +12,11 @@ my_anket = []
 
 
 async def show_ankets(message: types.Message):
+    """
+    достает из базы данные все анкеты
+    Выводит первую анкету
+    данные сохраняет в переменную, и больше в бд не обращаеться
+    """
     global ankets
     global num_anket
     global my_anket
@@ -36,6 +41,9 @@ async def show_ankets(message: types.Message):
 
 
 async def next_anket(callback: types.CallbackQuery):
+    """
+    Показывает следущую анкету
+    """
     global ankets
     global num_anket
     try:
@@ -49,6 +57,9 @@ async def next_anket(callback: types.CallbackQuery):
 
 
 async def like_anket(callback: types.CallbackQuery):
+    """
+    Лайкает анкету и отправляет симпатию владельцу анкеты
+    """
     global ankets
     global num_anket
     global my_anket
@@ -68,6 +79,10 @@ async def like_anket(callback: types.CallbackQuery):
 
 
 async def reload_ankets(message: types.Message):
+    """
+    Выставляет номер анкеты, которую надо посмотреть на 0
+    Вызывает функцию просмотра всех анкет
+    """
     if num_anket == len(ankets):
         sqlliteClient.reload_ankets(message.from_user.id)
         await show_ankets(message)
